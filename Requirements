@@ -1,0 +1,48 @@
+# Core Deep Learning Stack
+torch>=2.3.0
+torchaudio>=2.3.0
+torchvision>=0.18.0
+
+# Transformer Models (Wav2Vec2, Whisper, CLAP, etc.)
+transformers>=4.44.0
+accelerate>=0.33.0
+sentencepiece>=0.2.0
+bitsandbytes>=0.44.1
+
+# Audio + Signal Processing
+librosa>=0.10.2
+soundfile>=0.12.1
+numpy>=1.26.0
+scipy>=1.13.0
+audiomentations>=0.37.0  # for data augmentation
+ffmpeg-python>=0.2.0
+
+# Data and Evaluation
+datasets>=3.0.0
+pandas>=2.2.0
+scikit-learn>=1.5.0
+tqdm>=4.66.0
+matplotlib>=3.9.0
+seaborn>=0.13.0
+
+# Web Serving (FastAPI + ASGI stack)
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.9.0
+
+# Logging, Config, and Utilities
+python-dotenv>=1.0.1
+omegaconf>=2.3.0
+loguru>=0.7.2
+rich>=13.8.0
+
+# Testing & Linting
+pytest>=8.3.0
+black>=24.8.0
+isort>=5.13.0
+flake8>=7.1.0
+
+# Optional GPU optimization / speed-ups
+numba>=0.60.0
+nvidia-cublas-cu12>=12.4.2.65; platform_system == "Linux"
+nvidia-cudnn-cu12>=9.1.0.70; platform_system == "Linux"
