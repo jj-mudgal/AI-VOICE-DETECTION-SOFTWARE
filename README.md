@@ -4,7 +4,7 @@ An **AI-generated speech detector** built using state-of-the-art deep learning t
 
 ---
 
-## 🚀 Highlights
+## Highlights
 
 - **Transformer-based Audio Detection** — built on `torch`, `transformers`, and `torchaudio`.
 - **Pretrained Embedding Support** — integrates `facebook/wav2vec2-base`, `openai/whisper-base`, or `laion/clap`.
@@ -14,7 +14,7 @@ An **AI-generated speech detector** built using state-of-the-art deep learning t
 
 ---
 
-## 🧠 Model Overview
+## Model Overview
 
 | Component | Description |
 |------------|-------------|
