@@ -1,17 +1,17 @@
-# 🤝 Contributing to AI Audio Detector
+# Contributing to AI Audio Detector
 
 Thank you for your interest in contributing!  
-This project thrives on open collaboration — whether you’re fixing a bug, adding a feature, or improving documentation.
+This project thrives on open collaboration, whether you’re fixing a bug, adding a feature, or improving documentation.
 
----
++-+-+-+-+-+-+-+-+-
 
-## 🧩 Project Overview
+## Project Overview
 
 **AI Audio Detector** is a research-grade tool to identify whether audio samples are **human** or **AI-generated**, powered by **Wav2Vec2**, **CLAP**, and **Whisper** models.
 
----
++-+-+-+-+-+-+-+-+-
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Fork & Clone
 ```bash
