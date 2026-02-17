@@ -1,0 +1,9 @@
+torch
+torchaudio
+librosa
+numpy
+gradio
+scikit-learn
+matplotlib
+audiomentations
+python-dotenv
