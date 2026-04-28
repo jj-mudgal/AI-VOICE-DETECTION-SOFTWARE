@@ -1,5 +1,11 @@
 # AI Voice Detection Software
 
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-red)
+![Gradio](https://img.shields.io/badge/UI-Gradio-orange)
+![FastAPI](https://img.shields.io/badge/API-FastAPI-green)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+
 > Detect whether a voice is human or AI — powered by **Wav2Vec2**, **CLAP embeddings**, and a **CNN + Log-Mel Spectrogram** architecture trained to distinguish synthetic (TTS/VC) from real human speech.
 
 {paste image — screenshot of the Gradio web UI open in a browser, showing an audio upload widget on the left and a prediction result like "AI Generated | Confidence: 0.981" on the right}
