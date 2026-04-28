@@ -1,0 +1,76 @@
+<svg width="100%" viewBox="0 0 1200 520" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+    markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M2 1L9 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5"/>
+  </marker>
+</defs>
+
+<style>
+.box { fill:#0B1220; stroke-width:1.5; rx:12; }
+.title { fill:#E5E7EB; font-size:13px; font-weight:600; font-family:system-ui; }
+.sub { fill:#9CA3AF; font-size:11px; font-family:system-ui; }
+.curve { stroke:#6B7280; stroke-width:2; fill:none; marker-end:url(#arrow); }
+</style>
+
+<!-- DATASET -->
+<rect x="80" y="220" width="200" height="100" class="box" stroke="#3B82F6"/>
+<text x="180" y="250" text-anchor="middle" dominant-baseline="middle" class="title">
+Dataset (2000)
+</text>
+<text x="180" y="275" text-anchor="middle" dominant-baseline="middle" class="sub">
+Human + AI Audio
+</text>
+
+<!-- AUGMENTATION -->
+<rect x="340" y="140" width="200" height="100" class="box" stroke="#22C55E"/>
+<text x="440" y="175" text-anchor="middle" dominant-baseline="middle" class="title">
+Augmentation
+</text>
+<text x="440" y="200" text-anchor="middle" dominant-baseline="middle" class="sub">
+Noise · Pitch · Time
+</text>
+
+<!-- FEATURE -->
+<rect x="340" y="300" width="200" height="100" class="box" stroke="#A855F7"/>
+<text x="440" y="335" text-anchor="middle" dominant-baseline="middle" class="title">
+Feature Extraction
+</text>
+<text x="440" y="360" text-anchor="middle" dominant-baseline="middle" class="sub">
+Log-Mel Spectrogram
+</text>
+
+<!-- TRAIN -->
+<rect x="640" y="220" width="240" height="110" class="box" stroke="#06B6D4"/>
+<text x="760" y="255" text-anchor="middle" dominant-baseline="middle" class="title">
+Model Training
+</text>
+<text x="760" y="280" text-anchor="middle" dominant-baseline="middle" class="sub">
+CNN / Whisper
+</text>
+
+<!-- BEST -->
+<rect x="940" y="220" width="180" height="110" class="box" stroke="#EC4899"/>
+<text x="1030" y="260" text-anchor="middle" dominant-baseline="middle" class="title">
+Best Model
+</text>
+
+<!-- FLOW -->
+
+<!-- dataset → aug -->
+<path d="M280 270 C320 270, 320 190, 340 190" class="curve"/>
+
+<!-- dataset → feature -->
+<path d="M280 270 C320 270, 320 350, 340 350" class="curve"/>
+
+<!-- aug → train -->
+<path d="M540 190 C600 190, 600 260, 640 260" class="curve"/>
+
+<!-- feature → train -->
+<path d="M540 350 C600 350, 600 290, 640 290" class="curve"/>
+
+<!-- train → best -->
+<path d="M880 275 C910 275, 910 275, 940 275" class="curve"/>
+
+</svg>
