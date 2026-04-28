@@ -31,7 +31,7 @@
 | **Optimizer** | AdamW with weight decay 1e-4 |
 | **Training Device** | Apple MPS / CUDA / CPU (auto-detected) |
 
-![Model Architecture](diagrams/model-architecture.svg)
+![Model Architecture](diagrams/system-architecture.svg)
 
 ---
 
