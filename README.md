@@ -1,6 +1,6 @@
-# AI Audio Detector — Next-Gen Edition
+# AI Voice Detection Software
 
-> Detect whether a voice is human or AI-generated — powered by **Wav2Vec2**, **CLAP embeddings**, and a **CNN + Log-Mel Spectrogram** architecture trained to distinguish synthetic (TTS/VC) from real human speech.
+> Detect whether a voice is human or AI — powered by **Wav2Vec2**, **CLAP embeddings**, and a **CNN + Log-Mel Spectrogram** architecture trained to distinguish synthetic (TTS/VC) from real human speech.
 
 {paste image — screenshot of the Gradio web UI open in a browser, showing an audio upload widget on the left and a prediction result like "AI Generated | Confidence: 0.981" on the right}
 
@@ -31,64 +31,17 @@
 | **Optimizer** | AdamW with weight decay 1e-4 |
 | **Training Device** | Apple MPS / CUDA / CPU (auto-detected) |
 
----
-
-## ⏣ Architecture
-
-```
-Raw Audio (.wav / .mp3 / .flac / .ogg / .m4a)
-    |
-    |  librosa / torchaudio load + resample → 16kHz mono
-    v
-Preprocessing
-    |-- Log-Mel Spectrogram  (128 mels, n_fft=1024, hop=512)
-    |-- AmplitudeToDB
-    `-- Per-sample normalization  (mean=0, std=1)
-    |
-    v
-CNN Backbone (AudioDetector)
-    |-- Conv2d(1 → 64)  + BN + ReLU + MaxPool2d
-    |-- Conv2d(64 → 128) + BN + ReLU + MaxPool2d
-    |-- Conv2d(128 → 256) + BN + ReLU + MaxPool2d
-    |-- Conv2d(256 → 256) + BN + ReLU + MaxPool2d
-    `-- AdaptiveAvgPool2d(1,1) → Flatten
-    |
-    v
-Classifier Head
-    |-- Linear(256 → 128) + ReLU + Dropout(0.4)
-    `-- Linear(128 → 2)
-    |
-    v
-Softmax → { human_prob, ai_prob }
-    `-- Label: "Human" or "AI Generated"
-```
-
-{paste image — architecture diagram showing the CNN pipeline from raw audio → mel spectrogram → convolutional layers → classifier head → output label, OR a screenshot of your terminal showing training logs with epoch/loss/accuracy printed}
+![Model Architecture](diagrams/model-architecture.svg)
 
 ---
 
-## ⏣ Whisper Variant Architecture
+## ⏣ Whisper Variant (Alternative Backbone)
 
-An alternate backbone using OpenAI's Whisper encoder for richer audio representations:
+An alternative approach using OpenAI's Whisper encoder for richer audio representations.
 
-```
-Raw Audio (B, T)
-    |
-    v
-WhisperFeatureExtractor  →  Log-Mel (B, 80, 3000)
-    |
-    v
-Whisper Encoder (openai/whisper-small)
-    |
-    v
-last_hidden_state  →  Mean Pool across time  →  (B, H)
-    |
-    v
-Linear(H → 256) + ReLU + Dropout(0.25) + Linear(256 → 2)
-    |
-    v
-Logits → Predicted Label
-```
+<p align="center">
+  <img src="diagrams/whisper-architecture.svg" width="900"/>
+</p>
 
 ---
 
@@ -109,43 +62,18 @@ Logits → Predicted Label
 
 ## ⏣ Project Structure
 
-```
-|-- app.py                          # Gradio web demo
-|-- requirements.txt
-|-- confusion_matrix.png
-|-- roc_curve.png
-|
-|-- src/
-|   |-- __init__.py
-|   `-- aad/
-|       |-- config.py               # Env vars, hyperparams, device selection
-|       |-- data.py                 # AudioDataset: load, augment, mel transform
-|       |-- model.py                # CNN-based AudioDetector
-|       |-- model_whisper.py        # WhisperClassifier (encoder-only)
-|       |-- train.py                # Training loop (train/val/test splits)
-|       |-- infer.py                # Inference engine: load model + predict
-|       |-- api.py                  # FastAPI REST endpoint (/predict)
-|       |-- audio_loader.py         # ffmpeg-based raw audio loader
-|       `-- utils/
-|           `-- collate.py          # DataLoader collate fn (variable-length padding)
-|
-|-- data/
-|   |-- train/
-|   |   |-- human/
-|   |   `-- synthetic/
-|   |-- val/
-|   `-- test/
-|
-|-- checkpoints/
-|   `-- best_model.pt
-|
-`-- .github/
-    |-- workflows/ci.yaml
-    |-- PULL_REQUEST.md
-    `-- ISSUE_TEMPLATE/
-        |-- bugreport.yaml
-        `-- FEATURE_REQUEST.md
-```
+<p align="center">
+  <img src="diagrams/project-structure.svg" width="950"/>
+</p>
+
+The project is organized into modular components for data processing, model training, inference, and deployment:
+
+- **app.py** → Gradio-based web interface  
+- **src/aad/** → Core ML system (data, models, training, inference, API)  
+- **data/** → Train / validation / test audio datasets  
+- **checkpoints/** → Saved model weights  
+- **metrics/** → Evaluation outputs (confusion matrix, ROC)  
+- **.github/** → CI/CD workflows and templates  
 
 ---
 
@@ -179,8 +107,8 @@ Organise your audio files like this:
 ```
 data/
   train/
-    human/      ← real human speech clips
-    synthetic/  ← TTS / voice-cloned clips
+    human/      ← Human audio samples
+    synthetic/  ← AI-Generated audio samples
   val/
     human/
     synthetic/
@@ -234,6 +162,11 @@ curl -X POST http://localhost:8000/predict \
   "predicted_label": "synthetic"
 }
 ```
+---
+
+## ⏣ Training Pipeline
+
+![Training Pipeline](diagrams/training-pipeline.svg)
 
 ---
 
@@ -261,19 +194,14 @@ curl -X POST http://localhost:8000/predict \
 
 ## ⏣ Model Metrics
 
-| Metric | Score |
-|---|---|
-| Validation Accuracy | **97.5%** |
-| AUC | **0.995** |
-| Precision | **0.99** |
-| Recall | **0.99** |
-| F1 Score | **0.99** |
-| Dataset Size | 2000 samples |
-| Training Device | Apple MPS |
+### Evaluation Flow
+![Evaluation Flow](diagrams/evaluation-flow.svg)
 
-{paste image — confusion matrix plot (confusion_matrix.png) showing true vs predicted labels for Human and Synthetic classes}
+### Confusion Matrix
+![Confusion Matrix](confusion_matrix.png)
 
-{paste image — ROC curve plot (roc_curve.png) showing AUC = 0.995}
+### ROC Curve
+![ROC Curve](roc_curve.png)
 
 ---
 
