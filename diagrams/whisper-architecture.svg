@@ -1,0 +1,84 @@
+<svg width="100%" viewBox="0 0 1400 520" xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+    markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M2 1L9 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5"/>
+  </marker>
+</defs>
+
+<style>
+.box { fill:#0B1220; stroke-width:1.5; rx:12; }
+.title { fill:#E5E7EB; font-size:13px; font-weight:600; font-family:system-ui; }
+.sub { fill:#9CA3AF; font-size:11px; font-family:system-ui; }
+.curve { stroke:#6B7280; stroke-width:2; fill:none; marker-end:url(#arrow); }
+</style>
+
+<!-- INPUT -->
+<rect x="60" y="220" width="200" height="100" class="box" stroke="#3B82F6"/>
+<text x="160" y="250" text-anchor="middle" dominant-baseline="middle" class="title">
+Raw Audio
+</text>
+<text x="160" y="275" text-anchor="middle" dominant-baseline="middle" class="sub">
+(B, T)
+</text>
+
+<!-- FEATURE -->
+<rect x="320" y="200" width="220" height="120" class="box" stroke="#22C55E"/>
+<text x="430" y="235" text-anchor="middle" dominant-baseline="middle" class="title">
+Whisper Feature Extractor
+</text>
+<text x="430" y="260" text-anchor="middle" dominant-baseline="middle" class="sub">
+Log-Mel (80, 3000)
+</text>
+
+<!-- ENCODER -->
+<rect x="600" y="180" width="240" height="140" class="box" stroke="#A855F7"/>
+<text x="720" y="225" text-anchor="middle" dominant-baseline="middle" class="title">
+Whisper Encoder
+</text>
+<text x="720" y="250" text-anchor="middle" dominant-baseline="middle" class="sub">
+openai/whisper-small
+</text>
+<text x="720" y="275" text-anchor="middle" dominant-baseline="middle" class="sub">
+Transformer Blocks
+</text>
+
+<!-- POOL -->
+<rect x="880" y="220" width="200" height="100" class="box" stroke="#06B6D4"/>
+<text x="980" y="250" text-anchor="middle" dominant-baseline="middle" class="title">
+Mean Pooling
+</text>
+<text x="980" y="275" text-anchor="middle" dominant-baseline="middle" class="sub">
+(B, H)
+</text>
+
+<!-- CLASSIFIER -->
+<rect x="1120" y="200" width="220" height="120" class="box" stroke="#F59E0B"/>
+<text x="1230" y="235" text-anchor="middle" dominant-baseline="middle" class="title">
+Classifier Head
+</text>
+<text x="1230" y="260" text-anchor="middle" dominant-baseline="middle" class="sub">
+Linear → ReLU → Dropout
+</text>
+<text x="1230" y="280" text-anchor="middle" dominant-baseline="middle" class="sub">
+→ Linear (2)
+</text>
+
+<!-- OUTPUT -->
+<rect x="1120" y="360" width="220" height="100" class="box" stroke="#10B981"/>
+<text x="1230" y="395" text-anchor="middle" dominant-baseline="middle" class="title">
+Prediction
+</text>
+<text x="1230" y="420" text-anchor="middle" dominant-baseline="middle" class="sub">
+Human / AI
+</text>
+
+<!-- FLOW -->
+<path d="M260 270 C290 270, 290 260, 320 260" class="curve"/>
+<path d="M540 260 C570 260, 570 250, 600 250" class="curve"/>
+<path d="M840 250 C860 250, 860 270, 880 270" class="curve"/>
+<path d="M1080 270 C1100 270, 1100 260, 1120 260" class="curve"/>
+<path d="M1230 320 C1230 340, 1230 350, 1230 360" class="curve"/>
+
+</svg>
