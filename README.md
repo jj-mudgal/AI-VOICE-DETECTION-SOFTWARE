@@ -198,10 +198,10 @@ curl -X POST http://localhost:8000/predict \
 ![Evaluation Flow](diagrams/evaluation-flow.svg)
 
 ### Confusion Matrix
-![Confusion Matrix](confusion_matrix.png)
+![Confusion Matrix](metrics/confusion_matrix.png)
 
 ### ROC Curve
-![ROC Curve](roc_curve.png)
+![ROC Curve](metrics/roc_curve.png)
 
 ---
 
