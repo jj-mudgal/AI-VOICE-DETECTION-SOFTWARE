@@ -85,3 +85,6 @@ if config.freeze_encoder:
 
 def extract_features(self, x):
     return self.feature_extractor(x)
+
+# Clamp mel frames to avoid shape mismatch
+mel = mel[:, :, :3000]
