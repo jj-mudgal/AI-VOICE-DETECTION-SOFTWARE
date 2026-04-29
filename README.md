@@ -1,14 +1,23 @@
-# AI Voice Detection Software
+# AI Voice Detection
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-red)
 ![Gradio](https://img.shields.io/badge/UI-Gradio-orange)
 ![FastAPI](https://img.shields.io/badge/API-FastAPI-green)
+![Docker](https://img.shields.io/badge/Container-Docker-2496ED)
+![CI](https://img.shields.io/badge/CI-GitHub%20Actions-black)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)
+![Demo](https://img.shields.io/badge/Live%20Demo-HuggingFace%20Spaces-yellow)
 
 > Detect whether a voice is human or AI — powered by **Wav2Vec2**, **CLAP embeddings**, and a **CNN + Log-Mel Spectrogram** architecture trained to distinguish synthetic (TTS/VC) from real human speech.
 
-{paste image — screenshot of the Gradio web UI open in a browser, showing an audio upload widget on the left and a prediction result like "AI Generated | Confidence: 0.981" on the right}
+![Demo Screenshot](diagrams/demo-screenshot.png)
+
+---
+
+## ⏣ How it works
+
+Raw audio is converted into a Log-Mel Spectrogram — a 2D visual representation of sound frequencies over time. A CNN then classifies this "image" as human or synthetic. An alternative backbone uses OpenAI's Whisper encoder for richer audio representations. Both approaches output a confidence score alongside a Grad-CAM style heatmap showing which audio regions drove the prediction.
 
 ---
 
@@ -21,7 +30,7 @@
 - **Inference CLI & Web API** — run as Gradio demo, FastAPI REST service, or containerized microservice
 - **Audio Augmentation** — Gaussian noise, time stretch, pitch shift, and random shifts via `audiomentations`
 - **Continuous Integration** — preconfigured GitHub Actions for tests, linting, and Docker build
-- **Validation Accuracy: 97.5% | AUC: 0.995 | F1: 0.99**
+- **Validation Accuracy: 97.5% | AUC: 0.995 | F1: 0.99** — on 2000-sample proof-of-concept dataset
 
 ---
 
@@ -31,19 +40,19 @@
 |---|---|
 | **Feature Extractor** | Log-Mel Spectrogram (128 mels, 1024 FFT) |
 | **Primary Backbone** | 4-layer CNN with BatchNorm + AdaptiveAvgPool |
-| **Alt Backbone** | Whisper encoder (openai/whisper-small) with mean pooling |
+| **Alt Backbone** | Whisper encoder (`openai/whisper-small`) with mean pooling |
 | **Classifier Head** | Linear → ReLU → Dropout → Linear (2 classes) |
 | **Loss** | Cross-entropy (weighted) |
-| **Optimizer** | AdamW with weight decay 1e-4 |
-| **Training Device** | Apple MPS / CUDA / CPU (auto-detected) |
+| **Optimizer** | AdamW, weight decay 1e-4 |
+| **Device** | Auto-detected: MPS → CUDA → CPU |
 
-![Model Architecture](diagrams/system-architecture.svg)
+![Architecture Diagram](diagrams/system-architecture.svg)
 
 ---
 
 ## ⏣ Whisper Variant (Alternative Backbone)
 
-An alternative approach using OpenAI's Whisper encoder for richer audio representations.
+An alternative backbone using the Whisper encoder for richer audio representations (particularly effective on speech with strong linguistic structure).
 
 <p align="center">
   <img src="diagrams/whisper-architecture.svg" width="900"/>
@@ -60,7 +69,7 @@ An alternative approach using OpenAI's Whisper encoder for richer audio represen
 | Augmentation | audiomentations |
 | Web Demo | Gradio |
 | REST API | FastAPI + Uvicorn |
-| Data & Metrics | scikit-learn, matplotlib, numpy |
+| Evaluation | scikit-learn, matplotlib, numpy |
 | CI/CD | GitHub Actions |
 | Containerization | Docker |
 
@@ -68,179 +77,29 @@ An alternative approach using OpenAI's Whisper encoder for richer audio represen
 
 ## ⏣ Project Structure
 
-<p align="center">
-  <img src="diagrams/project-structure.svg" width="950"/>
-</p>
-
-The project is organized into modular components for data processing, model training, inference, and deployment:
-
-- **app.py** → Gradio-based web interface  
-- **src/aad/** → Core ML system (data, models, training, inference, API)  
-- **data/** → Train / validation / test audio datasets  
-- **checkpoints/** → Saved model weights  
-- **metrics/** → Evaluation outputs (confusion matrix, ROC)  
-- **.github/** → CI/CD workflows and templates  
-
----
-
-## ⏣ Getting Started
-
-### Prerequisites
-
-- Python 3.10+
-- `ffmpeg` installed on system (for `audio_loader.py`)
-- Apple Silicon (MPS), CUDA GPU, or CPU
-
-### Install
-
-```bash
-# Clone the repo
-git clone https://github.com/your-username/ai-audio-detector.git
-cd ai-audio-detector
-
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### Prepare Data
-
-Organise your audio files like this:
-
-```
-data/
-  train/
-    human/      ← Human audio samples
-    synthetic/  ← AI-Generated audio samples
-  val/
-    human/
-    synthetic/
-  test/
-    human/
-    synthetic/
-```
-
-Supported formats: `.wav`, `.mp3`, `.flac`, `.ogg`, `.m4a`
-
-### Train
-
-```bash
-python -m src.aad.train
-```
-
-Best checkpoint is automatically saved to `checkpoints/best_model.pt`.
-
-{paste image — terminal screenshot showing training output: epoch number, loss, train accuracy, val accuracy printed per epoch, and the "Saved best model" line}
-
-### Run Gradio Demo
-
-```bash
-python app.py
-```
-
-Open `http://localhost:7860` — upload any audio file and get an instant prediction.
-
-{paste image — two-tab Gradio UI: first tab showing the audio upload widget with a prediction result, second tab showing the confusion matrix and ROC curve images}
-
-### Run FastAPI Server
-
-```bash
-uvicorn src.aad.api:app --host 0.0.0.0 --port 8000 --reload
-```
-
-#### Example request
-
-```bash
-curl -X POST http://localhost:8000/predict \
-  -F "file=@sample.wav"
-```
-
-#### Example response
-
-```json
-{
-  "filename": "sample.wav",
-  "human_prob": 0.031,
-  "ai_prob": 0.969,
-  "predicted_label": "synthetic"
-}
-```
----
-
-## ⏣ Training Pipeline
-
-![Training Pipeline](diagrams/training-pipeline.svg)
-
----
-
-## ⏣ API Reference
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/` | Health check |
-| `POST` | `/predict` | Upload audio file → returns label + probabilities |
-
-**Accepted formats:** `.wav`, `.flac`, `.mp3`, `.ogg`, `.m4a`
-
-**Response schema:**
-
-```json
-{
-  "filename": "string",
-  "human_prob": 0.0,
-  "ai_prob": 0.0,
-  "predicted_label": "human | synthetic"
-}
-```
+Core ML logic lives in `src/aad/` — data loading, model definitions, training loop, inference, and FastAPI server. For full layout and setup instructions, see [SETUP.md](SETUP.md).
 
 ---
 
 ## ⏣ Model Metrics
 
 ### Evaluation Flow
+
 ![Evaluation Flow](diagrams/evaluation-flow.svg)
+
+| Metric | Score |
+|---|---|
+| Validation Accuracy | 97.5% |
+| AUC-ROC | 0.995 |
+| F1 Score | 0.99 |
+
+> **On dataset size:** These results are on a 2000-sample proof-of-concept dataset (~1000 human, ~1000 synthetic). While metrics are strong, generalization to diverse real-world audio — varied TTS engines, recording conditions, and languages — is not guaranteed at this scale. Expanding the dataset is listed in the roadmap. Current results should be interpreted as proof-of-concept performance, not production benchmarks.
 
 ### Confusion Matrix
 ![Confusion Matrix](metrics/confusion_matrix.png)
 
 ### ROC Curve
 ![ROC Curve](metrics/roc_curve.png)
-
----
-
-## ⏣ Configuration
-
-All parameters are configurable via environment variables or a `.env` file:
-
-```env
-MODEL_NAME=cnn_raw_waveform
-SAMPLE_RATE=16000
-NUM_CLASSES=2
-DATA_DIR=data/
-OUTPUT_DIR=checkpoints/
-LOG_DIR=logs/
-EPOCHS=35
-BATCH_SIZE=16
-LEARNING_RATE=1e-4
-SEED=42
-USE_CUDA=1
-```
-
-Device is auto-selected: **MPS → CUDA → CPU** (in that priority order).
-
----
-
-## ⏣ Run with Docker
-
-```bash
-docker build -t ai-audio-detector:latest .
-docker run -p 8000:8000 ai-audio-detector:latest
-```
-
-CI also auto-builds Docker on every push to `main` via GitHub Actions.
 
 ---
 
@@ -265,34 +124,18 @@ GitHub Actions pipeline runs on every push and pull request to `main` / `dev`:
 - [x] Gradio web demo
 - [x] FastAPI REST API
 - [x] CI/CD with GitHub Actions
+- [x] Dockerized deployment
 - [ ] Wav2Vec2 / CLAP embedding fine-tuning
 - [ ] Ensemble: CNN + Whisper + Wav2Vec2 fusion
-- [ ] Docker sandbox with GPU support
-- [ ] Dataset expansion beyond 2000 samples
+- [ ] Dataset expansion (beyond 2000 samples)
 - [ ] Real-time streaming inference
-- [ ] Hugging Face Hub model card + deployment
+- [ ] HuggingFace Hub model card + deployment
 
 ---
 
-## ⏣ Security Notes
+## ⏣ Contributions
 
-- CORS is currently set to `origin: "*"` — replace with your actual frontend domain before deploying
-- Code execution sandbox not applicable here, but model inference has no external side effects
-- **TODO:** Add authentication for the `/predict` endpoint in production deployments
-
----
-
-## ⏣ Contributing
-
-Contributions are welcome — bugs, features, or documentation improvements.
-
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Format your code (`black src tests`, `isort src tests`)
-4. Run tests (`pytest -q`)
-5. Open a pull request using the provided PR template
-
-See `CONTRIBUTING.md` for full guidelines.
+Contributions are welcome — see `CONTRIBUTING.md` for full guidelines.
 
 ---
 
