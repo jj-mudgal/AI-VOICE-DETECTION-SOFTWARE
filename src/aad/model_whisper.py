@@ -77,3 +77,8 @@ class WhisperClassifier(nn.Module):
 
 # Support dynamic whisper model selection
 self.model_name = config.whisper_model
+
+# Freeze encoder if enabled
+if config.freeze_encoder:
+    for param in self.encoder.parameters():
+        param.requires_grad = False

@@ -53,3 +53,4 @@ SEED = int(os.getenv("SEED", 42))
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
 whisper_model = "openai/whisper-small"  # or "openai/whisper-base"
+freeze_encoder = True
