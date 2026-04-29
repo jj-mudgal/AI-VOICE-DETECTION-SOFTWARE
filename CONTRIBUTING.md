@@ -1,19 +1,50 @@
-# Contributing to AI Audio Detector
+# Contributing
 
-Thank you for your interest in contributing!  
-This project thrives on open collaboration, whether you’re fixing a bug, adding a feature, or improving documentation.
+Contributions are welcome — bugs, features, or documentation improvements.
+ 
+## ⏣ Getting Started
 
-+-+-+-+-+-+-+-+-+-
+Fork the repo and create a feature branch:
 
-## Project Overview
-
-**AI Audio Detector** is a research-grade tool to identify whether audio samples are **human** or **AI-generated**, powered by **Wav2Vec2**, **CLAP**, and **Whisper** models.
-
-+-+-+-+-+-+-+-+-+-
-
-## Getting Started
-
-### 1. Fork & Clone
 ```bash
-git clone https://github.com/<your-username>/ai-audio-detector.git
-cd ai-audio-detector
+git checkout -b feature/your-feature
+```
+
+For setup and local installation, see [SETUP.md](SETUP.md).
+
+## ⏣ Before You Submit
+
+Format and lint your code:
+
+```bash
+black src tests
+isort src tests
+flake8 src tests
+```
+
+Run the test suite:
+
+```bash
+pytest -q
+```
+
+All checks must pass before opening a pull request. GitHub Actions will verify this automatically on your PR.
+
+## ⏣ Pull Request Guidelines
+
+- Keep PRs focused — one feature or fix per PR
+- Write a clear title and description explaining what changed and why
+- If your PR changes model behaviour or metrics, include before/after numbers
+- Reference any related issues with `Fixes #issue-number`
+
+## ⏣ Reporting Bugs
+
+Open a GitHub issue with:
+- What you expected to happen
+- What actually happened
+- Steps to reproduce
+- Your environment (OS, Python version, GPU/CPU)
+
+## ⏣ License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
