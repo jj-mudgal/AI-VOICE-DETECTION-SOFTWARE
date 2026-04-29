@@ -180,3 +180,8 @@ def train_model():
 
 if __name__ == "__main__":
     train_model()
+
+# Cosine annealing scheduler with warmup
+from torch.optim.lr_scheduler import CosineAnnealingLR
+
+scheduler = CosineAnnealingLR(optimizer, T_max=10)
