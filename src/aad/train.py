@@ -206,3 +206,7 @@ else:
 if patience_counter >= config.early_stopping_patience:
     print("Early stopping triggered")
     break
+
+# Safe checkpoint loading
+if checkpoint_path and os.path.exists(checkpoint_path):
+    model.load_state_dict(torch.load(checkpoint_path))
