@@ -30,7 +30,7 @@ Raw audio is converted into a Log-Mel Spectrogram — a 2D visual representation
 - **Inference CLI & Web API** — run as Gradio demo, FastAPI REST service, or containerized microservice
 - **Audio Augmentation** — Gaussian noise, time stretch, pitch shift, and random shifts via `audiomentations`
 - **Continuous Integration** — preconfigured GitHub Actions for tests, linting, and Docker build
-- **Validation Accuracy: 97.5% | AUC: 0.995 | F1: 0.99** — on 2000-sample proof-of-concept dataset
+- **Validation Accuracy: 98.5% | AUC: 0.995 | F1: 0.99** — on 2000-sample proof-of-concept dataset
 
 ---
 
