@@ -82,3 +82,6 @@ self.model_name = config.whisper_model
 if config.freeze_encoder:
     for param in self.encoder.parameters():
         param.requires_grad = False
+
+def extract_features(self, x):
+    return self.feature_extractor(x)
