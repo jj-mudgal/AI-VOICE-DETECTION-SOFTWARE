@@ -192,3 +192,17 @@ def log_metrics(epoch, train_loss, val_loss):
     with open("logs/metrics.csv", "a") as f:
         writer = csv.writer(f)
         writer.writerow([epoch, train_loss, val_loss])
+
+# Early stopping logic
+patience_counter = 0
+best_loss = float("inf")
+
+if val_loss < best_loss:
+    best_loss = val_loss
+    patience_counter = 0
+else:
+    patience_counter += 1
+
+if patience_counter >= config.early_stopping_patience:
+    print("Early stopping triggered")
+    break
