@@ -210,3 +210,14 @@ if patience_counter >= config.early_stopping_patience:
 # Safe checkpoint loading
 if checkpoint_path and os.path.exists(checkpoint_path):
     model.load_state_dict(torch.load(checkpoint_path))
+
+def evaluate(model, dataloader):
+    model.eval()
+    total_loss = 0
+    with torch.no_grad():
+        for batch in dataloader:
+            x, y = batch
+            out = model(x)
+            loss = criterion(out, y)
+            total_loss += loss.item()
+    return total_loss / len(dataloader)
