@@ -74,3 +74,6 @@ class WhisperClassifier(nn.Module):
         x = self.project(pooled)
         logits = self.classifier(x)
         return logits
+
+# Support dynamic whisper model selection
+self.model_name = config.whisper_model
