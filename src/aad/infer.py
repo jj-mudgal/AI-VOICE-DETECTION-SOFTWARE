@@ -13,3 +13,5 @@ class InferenceEngine:
         logits = self.model(x)
         probs = torch.softmax(logits, dim=-1)
         return probs
+
+from src.aad.utils.preprocess import normalize_waveform
