@@ -56,3 +56,6 @@ whisper_model = "openai/whisper-small"  # or "openai/whisper-base"
 freeze_encoder = True
 
 early_stopping_patience = 5
+
+# Early stopping config
+early_stopping_patience = 5
