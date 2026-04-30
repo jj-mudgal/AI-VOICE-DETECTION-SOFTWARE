@@ -238,3 +238,9 @@ def log_metrics(epoch, train_loss, val_loss):
 # --- Early stopping ---
 patience_counter = 0
 best_loss = float("inf")
+
+# --- Safe checkpoint loading ---
+import os
+
+if os.path.exists("checkpoints/best_model.pt"):
+    model.load_state_dict(torch.load("checkpoints/best_model.pt"))
