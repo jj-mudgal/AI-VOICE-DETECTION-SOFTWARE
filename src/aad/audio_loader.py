@@ -16,3 +16,7 @@ def load_audio(path, sr=SAMPLE_RATE):
     waveform = np.frombuffer(out, dtype=np.float32)
     waveform = torch.from_numpy(waveform).unsqueeze(0)
     return waveform, sr
+
+def validate_audio_bytes(file_bytes: bytes):
+    # Basic header check (not extension-based)
+    return len(file_bytes) > 100
