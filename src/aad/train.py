@@ -226,3 +226,11 @@ def evaluate(model, dataloader):
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
 scheduler = CosineAnnealingLR(optimizer, T_max=10)
+
+# --- CSV logging ---
+import csv
+
+def log_metrics(epoch, train_loss, val_loss):
+    with open("logs/metrics.csv", "a") as f:
+        writer = csv.writer(f)
+        writer.writerow([epoch, train_loss, val_loss])
