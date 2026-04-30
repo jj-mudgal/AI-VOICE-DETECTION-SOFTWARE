@@ -221,3 +221,8 @@ def evaluate(model, dataloader):
             loss = criterion(out, y)
             total_loss += loss.item()
     return total_loss / len(dataloader)
+
+# --- Scheduler (cosine annealing) ---
+from torch.optim.lr_scheduler import CosineAnnealingLR
+
+scheduler = CosineAnnealingLR(optimizer, T_max=10)
