@@ -93,3 +93,11 @@ async def predict_audio(file: UploadFile = File(...)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("src.aad.api:app", host="0.0.0.0", port=8000, reload=True)
+
+@app.get("/health")
+def health():
+    return {
+        "status": "ok",
+        "model": "AudioDetector",
+        "device": "cpu"
+    }
