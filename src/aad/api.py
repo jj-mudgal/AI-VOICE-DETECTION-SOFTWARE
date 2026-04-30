@@ -101,3 +101,10 @@ def health():
         "model": "AudioDetector",
         "device": "cpu"
     }
+
+@app.post("/predict-batch")
+async def predict_batch(files: list):
+    results = []
+    for f in files:
+        results.append({"filename": str(f), "prediction": "todo"})
+    return {"results": results}
