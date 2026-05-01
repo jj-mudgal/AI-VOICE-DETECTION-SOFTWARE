@@ -1,110 +1,69 @@
-"""
-Audio dataset and preprocessing utilities
------------------------------------------
-Supports WAV / MP3 / FLAC / M4A
-Loads data from structured splits:
-    data/train/
-    data/val/
-    data/test/
-
-Converts audio → Log-Mel Spectrogram for CNN training.
-"""
-
 import os
-import torch
 import librosa
-import torchaudio
-from torch.utils.data import Dataset
-from audiomentations import Compose, AddGaussianNoise, TimeStretch, PitchShift, Shift
-from .config import SAMPLE_RATE, DATA_DIR
+import numpy as np
+import torch
+import torchaudio.transforms as T
+
+"""
+AudioDataset
+
+Expected folder structure:
+
+data/
+  train/
+    human/
+    synthetic/
+  val/
+    human/
+    synthetic/
+  test/
+    human/
+    synthetic/
+
+Supported formats:
+.wav, .mp3, .flac, .ogg, .m4a
+
+Labels:
+- human → 0
+- synthetic → 1
+"""
+
+SUPPORTED_EXTENSIONS = [".wav", ".mp3", ".flac", ".ogg", ".m4a"]
 
 
-class AudioDataset(Dataset):
-    def __init__(self, split="train", sample_rate=SAMPLE_RATE, augment=False):
-        """
-        split: "train", "val", or "test"
-        augment: only True for training set
-        """
+def load_audio(path, sr=16000):
+    try:
+        waveform, _ = librosa.load(path, sr=sr)
 
-        self.sample_rate = sample_rate
-        self.augment = augment
-        self.data_dir = os.path.join(DATA_DIR, split)
+        if waveform is None or len(waveform) == 0:
+            waveform = np.zeros(sr)
 
-        self.paths = []
-        self.labels = []
+        return waveform
+    except Exception:
+        return np.zeros(sr)
 
-        # -------------------------
-        # Collect files from split
-        # -------------------------
-        for label_name, label in [("human", 0), ("synthetic", 1)]:
-            folder = os.path.join(self.data_dir, label_name)
-            if not os.path.isdir(folder):
-                continue
 
-            for f in os.listdir(folder):
-                if f.lower().endswith((".wav", ".mp3", ".flac", ".ogg", ".m4a")):
-                    self.paths.append(os.path.join(folder, f))
-                    self.labels.append(label)
+def scan_files(root_dir):
+    files = []
 
-        print(f"📁 Loaded {split} dataset: {len(self.paths)} samples")
+    for label in ["human", "synthetic"]:
+        folder = os.path.join(root_dir, label)
 
-        # -------------------------
-        # Audio augmentation (train only)
-        # -------------------------
-        self.augmenter = (
-            Compose([
-                AddGaussianNoise(min_amplitude=0.001, max_amplitude=0.01, p=0.3),
-                TimeStretch(min_rate=0.9, max_rate=1.1, p=0.2),
-                PitchShift(min_semitones=-2, max_semitones=2, p=0.2),
-                Shift(min_shift=-0.1, max_shift=0.1, p=0.2),
-            ])
-            if augment else None
-        )
+        for fname in os.listdir(folder):
+            ext = os.path.splitext(fname)[1].lower()
 
-        # -------------------------
-        # Mel Spectrogram Transform
-        # -------------------------
-        self.mel_transform = torchaudio.transforms.MelSpectrogram(
-            sample_rate=self.sample_rate,
-            n_mels=128,
-            n_fft=1024,
-            hop_length=512
-        )
+            if ext in SUPPORTED_EXTENSIONS:
+                files.append((os.path.join(folder, fname), label))
 
-        self.amplitude_to_db = torchaudio.transforms.AmplitudeToDB()
+    return files
 
-    def __len__(self):
-        return len(self.paths)
 
-    def __getitem__(self, idx):
-        path = self.paths[idx]
-        label = torch.tensor(self.labels[idx], dtype=torch.long)
+class AudioAugmentation:
+    def __init__(self):
+        self.freq_mask = T.FrequencyMasking(freq_mask_param=15)
+        self.time_mask = T.TimeMasking(time_mask_param=35)
 
-        # Load audio
-        waveform, sr = librosa.load(path, sr=None, mono=True)
-
-        # Resample if needed
-        if sr != self.sample_rate:
-            waveform = librosa.resample(
-                waveform,
-                orig_sr=sr,
-                target_sr=self.sample_rate
-            )
-
-        # Augmentation (train only)
-        if self.augmenter is not None:
-            waveform = self.augmenter(
-                samples=waveform,
-                sample_rate=self.sample_rate
-            )
-
-        waveform = torch.tensor(waveform, dtype=torch.float32).unsqueeze(0)
-
-        # Convert to Mel Spectrogram
-        mel = self.mel_transform(waveform)
-        mel = self.amplitude_to_db(mel)
-
-        # Normalize per sample
-        mel = (mel - mel.mean()) / (mel.std() + 1e-6)
-
-        return mel, label
+    def __call__(self, spec):
+        spec = self.freq_mask(spec)
+        spec = self.time_mask(spec)
+        return spec
