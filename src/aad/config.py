@@ -1,61 +1,7 @@
-"""
-Configuration module for the AI Audio Detector.
-------------------------------------------------
-Handles environment variables, default parameters,
-and runtime device selection.
-"""
+class Config:
+    SAMPLE_RATE = 16000
+    BATCH_SIZE = 16
+    LR = 1e-4
+    EPOCHS = 20
 
-import os
-from dotenv import load_dotenv
-import torch
-
-# ------------------------------------------------------------
-# Load environment variables from .env file (if present)
-# ------------------------------------------------------------
-load_dotenv()
-
-# ------------------------------------------------------------
-# Core Configuration
-# ------------------------------------------------------------
-MODEL_NAME = os.getenv("MODEL_NAME", "cnn_raw_waveform")
-SAMPLE_RATE = int(os.getenv("SAMPLE_RATE", 16000))
-NUM_CLASSES = int(os.getenv("NUM_CLASSES", 2))
-
-# Directories
-DATA_DIR = os.getenv("DATA_DIR", "data/")
-OUTPUT_DIR = os.getenv("OUTPUT_DIR", "checkpoints/")
-LOG_DIR = os.getenv("LOG_DIR", "logs/")
-
-# ------------------------------------------------------------
-# Training Hyperparameters (Optimized for 2000 samples CNN)
-# ------------------------------------------------------------
-EPOCHS = int(os.getenv("EPOCHS", 35))
-BATCH_SIZE = int(os.getenv("BATCH_SIZE", 16))
-
-# 🔥 Increased learning rate (previously too low)
-LEARNING_RATE = float(os.getenv("LEARNING_RATE", 1e-4))
-
-# ------------------------------------------------------------
-# Device Selection (Apple Silicon / CUDA / CPU)
-# ------------------------------------------------------------
-if torch.backends.mps.is_available():
-    DEVICE = "mps"
-elif torch.cuda.is_available() and os.getenv("USE_CUDA", "1") == "1":
-    DEVICE = "cuda"
-else:
-    DEVICE = "cpu"
-
-# ------------------------------------------------------------
-# Miscellaneous
-# ------------------------------------------------------------
-SEED = int(os.getenv("SEED", 42))
-
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-os.makedirs(LOG_DIR, exist_ok=True)
-whisper_model = "openai/whisper-small"  # or "openai/whisper-base"
-freeze_encoder = True
-
-early_stopping_patience = 5
-
-# Early stopping config
-early_stopping_patience = 5
+    DROPOUT = 0.4
