@@ -1,47 +1,96 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import torchaudio.transforms as T
 
-class AudioDetector(nn.Module):
-    def __init__(self):
-        super(AudioDetector, self).__init__()
 
-        self.conv1 = nn.Conv2d(1, 64, 3, padding=1)
-        self.bn1 = nn.BatchNorm2d(64)
-
-        self.conv2 = nn.Conv2d(64, 128, 3, padding=1)
-        self.bn2 = nn.BatchNorm2d(128)
-
-        self.conv3 = nn.Conv2d(128, 256, 3, padding=1)
-        self.bn3 = nn.BatchNorm2d(256)
-
-        self.conv4 = nn.Conv2d(256, 256, 3, padding=1)
-        self.bn4 = nn.BatchNorm2d(256)
-
-        self.pool = nn.AdaptiveAvgPool2d((1, 1))
-
-        self.dropout = nn.Dropout(0.4)
-        self.fc1 = nn.Linear(256, 128)
-        self.fc2 = nn.Linear(128, 2)
+class SEBlock(nn.Module):
+    def __init__(self, channels, reduction=16):
+        super().__init__()
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channels, channels // reduction),
+            nn.ReLU(),
+            nn.Linear(channels // reduction, channels),
+            nn.Sigmoid()
+        )
 
     def forward(self, x):
+        b, c, _, _ = x.shape
+        y = self.pool(x).view(b, c)
+        y = self.fc(y).view(b, c, 1, 1)
+        return x * y
 
-        x = F.relu(self.bn1(self.conv1(x)))
-        x = F.max_pool2d(x, 2)
 
-        x = F.relu(self.bn2(self.conv2(x)))
-        x = F.max_pool2d(x, 2)
+class ResidualBlock(nn.Module):
+    def __init__(self, in_ch, out_ch):
+        super().__init__()
 
-        x = F.relu(self.bn3(self.conv3(x)))
-        x = F.max_pool2d(x, 2)
+        self.conv = nn.Sequential(
+            nn.Conv2d(in_ch, out_ch, 3, padding=1),
+            nn.BatchNorm2d(out_ch),
+            nn.ReLU(),
+            nn.Conv2d(out_ch, out_ch, 3, padding=1),
+            nn.BatchNorm2d(out_ch),
+        )
 
-        x = F.relu(self.bn4(self.conv4(x)))
-        x = F.max_pool2d(x, 2)
+        self.se = SEBlock(out_ch)
 
-        x = self.pool(x)
-        x = x.view(x.size(0), -1)
+        self.shortcut = (
+            nn.Conv2d(in_ch, out_ch, 1)
+            if in_ch != out_ch else nn.Identity()
+        )
 
-        x = F.relu(self.fc1(x))
-        x = self.dropout(x)
+        self.relu = nn.ReLU()
 
-        return self.fc2(x)
+    def forward(self, x):
+        identity = self.shortcut(x)
+        out = self.conv(x)
+        out = self.se(out)
+        out += identity
+        return self.relu(out)
+
+
+class AudioDetector(nn.Module):
+    def __init__(self, dropout=0.4):
+        super().__init__()
+
+        # 🔥 moved mel inside model
+        self.mel = T.MelSpectrogram(
+            sample_rate=16000,
+            n_fft=1024,
+            hop_length=512,
+            n_mels=128
+        )
+
+        self.to_db = T.AmplitudeToDB()
+
+        self.backbone = nn.Sequential(
+            ResidualBlock(1, 64),
+            nn.MaxPool2d(2),
+
+            ResidualBlock(64, 128),
+            nn.MaxPool2d(2),
+
+            ResidualBlock(128, 256),
+            nn.MaxPool2d(2),
+
+            ResidualBlock(256, 256),
+            nn.AdaptiveAvgPool2d((1, 1))
+        )
+
+        self.head = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(128, 2)
+        )
+
+    def forward(self, waveform):
+        x = self.mel(waveform)
+        x = self.to_db(x)
+
+        x = x.unsqueeze(1)  # (B, 1, mel, time)
+
+        x = self.backbone(x)
+        return self.head(x)
