@@ -43,7 +43,7 @@ def predict(audio_file):
 
 with gr.Blocks() as demo:
 
-    gr.Markdown("# 🎙 Synthetic Voice Detector")
+    gr.Markdown("# AI-Generated Voice Detector")
     gr.Markdown("""
     **Validation Accuracy:** 97.5%  
     **AUC:** 0.995  
