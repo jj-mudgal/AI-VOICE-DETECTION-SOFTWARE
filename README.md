@@ -11,7 +11,7 @@
 
 > Detect whether a voice is human or AI — powered by **Wav2Vec2**, **CLAP embeddings**, and a **CNN + Log-Mel Spectrogram** architecture trained to distinguish synthetic (TTS/VC) from real human speech.
 
-![Demo Screenshot](diagrams/demo-screenshot.png)
+![Demo Screenshot](diagrams/demo-screenshot2.png)
 
 ---
 
