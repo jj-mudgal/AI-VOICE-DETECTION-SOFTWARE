@@ -89,7 +89,7 @@ Core ML logic lives in `src/aad/` — data loading, model definitions, training 
 
 | Metric | Score |
 |---|---|
-| Validation Accuracy | 97.5% |
+| Validation Accuracy | 98.5% |
 | AUC-ROC | 0.995 |
 | F1 Score | 0.99 |
 
