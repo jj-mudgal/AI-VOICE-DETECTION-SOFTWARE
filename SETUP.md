@@ -81,7 +81,7 @@ python app.py
 
 Open `http://localhost:7860` — upload any audio file and get an instant prediction.
 
-![Demo Screenshot](diagrams/demo-screenshot2.svg)
+![Demo Screenshot](diagrams/demo-screenshot.png)
 
 ---
 
