@@ -1,2 +1,15 @@
+# datasets
 data/
+data/train/
+data/val/
+data/test/
+
+# model weights
 checkpoints/
+
+# logs
+logs/
+
+# python cache
+__pycache__/
+*.pyc
