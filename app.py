@@ -21,6 +21,7 @@ mel_transform = torchaudio.transforms.MelSpectrogram(
 
 amplitude_to_db = torchaudio.transforms.AmplitudeToDB()
 
+
 def predict(audio_file):
     if audio_file is None:
         return "No input"
@@ -42,7 +43,11 @@ def predict(audio_file):
         probs = torch.softmax(logits, dim=1)
         ai_score = probs[0, 1].item()
 
-    return "AI" if ai_score > 0.5 else "Human"
+    label = "AI Generated" if ai_score > 0.5 else "Human"
+    confidence = ai_score if ai_score > 0.5 else 1 - ai_score
+
+    return f"{label} | Confidence: {confidence:.3f}"
+
 
 with gr.Blocks() as demo:
     audio = gr.Audio(type="filepath")
