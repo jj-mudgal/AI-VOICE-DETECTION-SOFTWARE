@@ -74,7 +74,10 @@ with gr.Blocks() as demo:
     gr.Markdown("# 🎙️ AI Voice Detection")
 
     with gr.Tab("Live Demo"):
-        audio = gr.Audio(type="filepath")
+        audio = gr.Audio(
+            sources=["upload", "microphone"],  # ✅ NEW
+            type="filepath"
+        )
         out = gr.Textbox(label="Prediction")
 
         audio.change(predict, audio, out)
