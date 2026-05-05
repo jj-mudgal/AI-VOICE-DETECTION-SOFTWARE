@@ -92,3 +92,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# --- early stopping re-export so the import resolves cleanly ---
+from src.aad.utils.early_stopping import EarlyStopping  # noqa: F401
