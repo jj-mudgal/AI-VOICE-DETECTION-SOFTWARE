@@ -68,3 +68,33 @@ class AudioAugmentation:
         spec = self.freq_mask(spec)
         spec = self.time_mask(spec)
         return spec
+
+
+from torch.utils.data import DataLoader, random_split
+
+
+def get_dataloaders(data_dir, batch_size=16, val_split=0.2, sr=16000, num_workers=0):
+    """
+    Returns (train_loader, val_loader) from a flat data_dir
+    containing human/ and synthetic/ subdirectories.
+    """
+    dataset = AudioDataset(data_dir, sr=sr)
+
+    val_size   = int(len(dataset) * val_split)
+    train_size = len(dataset) - val_size
+
+    train_ds, val_ds = random_split(
+        dataset, [train_size, val_size],
+        generator=torch.Generator().manual_seed(42)
+    )
+
+    train_loader = DataLoader(
+        train_ds, batch_size=batch_size,
+        shuffle=True, num_workers=num_workers, drop_last=True
+    )
+    val_loader = DataLoader(
+        val_ds, batch_size=batch_size,
+        shuffle=False, num_workers=num_workers
+    )
+
+    return train_loader, val_loader
