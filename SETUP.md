@@ -166,3 +166,54 @@ ALLOWED_ORIGINS=https://myapp.com,https://staging.myapp.com
 ```
 
 > **Never deploy with `allow_origins=["*"]` in production.**
+
+---
+
+## ⏣ API Examples
+
+### Health check
+
+```bash
+curl http://localhost:8000/health
+```
+
+```json
+{
+  "status": "ok",
+  "model": "AudioDetector",
+  "device": "cpu"
+}
+```
+
+### Single file prediction
+
+```bash
+curl -X POST http://localhost:8000/predict \
+  -F "file=@sample.wav"
+```
+
+```json
+{
+  "filename": "sample.wav",
+  "human_prob": 0.031,
+  "ai_prob": 0.969,
+  "predicted_label": "synthetic"
+}
+```
+
+### Batch prediction
+
+```bash
+curl -X POST http://localhost:8000/predict-batch \
+  -F "files=@clip1.wav" \
+  -F "files=@clip2.mp3"
+```
+
+```json
+{
+  "results": [
+    { "filename": "clip1.wav", "human_prob": 0.94, "ai_prob": 0.06, "predicted_label": "human" },
+    { "filename": "clip2.mp3", "human_prob": 0.02, "ai_prob": 0.98, "predicted_label": "synthetic" }
+  ]
+}
+```
