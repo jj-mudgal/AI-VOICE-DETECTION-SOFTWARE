@@ -89,3 +89,36 @@ async def predict_audio(file: UploadFile = File(...)):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("src.aad.api:app", host="0.0.0.0", port=8000, reload=True)
+
+
+@app.post("/predict-batch")
+async def predict_batch(files: list[UploadFile] = File(...)):
+    """Run inference on multiple audio files in one request."""
+    if len(files) > 10:
+        raise HTTPException(status_code=400, detail="Max 10 files per batch.")
+
+    results = []
+    for file in files:
+        if not file.filename.lower().endswith((".wav", ".flac", ".mp3", ".ogg", ".m4a")):
+            results.append({"filename": file.filename, "error": "Unsupported format"})
+            continue
+
+        contents  = await file.read()
+        audio_bytes = __import__("io").BytesIO(contents)
+
+        try:
+            import librosa, torch
+            waveform, _ = librosa.load(audio_bytes, sr=SAMPLE_RATE, mono=True)
+            waveform    = librosa.util.normalize(waveform)
+            waveform    = torch.tensor(waveform, dtype=torch.float32).unsqueeze(0)
+            probs       = engine.predict(waveform).cpu().numpy()[0]
+            results.append({
+                "filename":        file.filename,
+                "human_prob":      float(probs[0]),
+                "ai_prob":         float(probs[1]),
+                "predicted_label": "synthetic" if probs[1] >= engine.threshold else "human",
+            })
+        except Exception as e:
+            results.append({"filename": file.filename, "error": str(e)})
+
+    return {"results": results}
