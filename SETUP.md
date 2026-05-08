@@ -149,3 +149,20 @@ Response schema:
 ```
 
 > **Note:** CORS is currently set to `origin: "*"` — replace with your frontend domain before deploying to production. Consider adding authentication to `/predict` for any public-facing deployment.
+
+---
+
+## ⏣ CORS Configuration
+
+By default the API allows requests from `http://localhost:3000`.
+Set the `ALLOWED_ORIGINS` environment variable to restrict or expand this:
+
+```env
+# Single origin
+ALLOWED_ORIGINS=https://myapp.com
+
+# Multiple origins (comma-separated)
+ALLOWED_ORIGINS=https://myapp.com,https://staging.myapp.com
+```
+
+> **Never deploy with `allow_origins=["*"]` in production.**
