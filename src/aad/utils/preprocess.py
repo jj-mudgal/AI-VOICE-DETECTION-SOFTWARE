@@ -58,3 +58,25 @@ def load_and_preprocess(path: str, target_sr: int = 16000) -> "tuple[np.ndarray,
     tensor = torch.tensor(waveform, dtype=torch.float32).unsqueeze(0)
     tensor = normalize_waveform(tensor)
     return waveform, tensor, sr
+
+
+def compute_prob_bar(human_prob: float, ai_prob: float) -> np.ndarray:
+    """Return an RGB bar chart of class probabilities."""
+    fig, ax = plt.subplots(figsize=(4, 2))
+    bars = ax.barh(
+        ["Human", "AI Generated"],
+        [human_prob, ai_prob],
+        color=["#28c840", "#ff5f57"]
+    )
+    ax.set_xlim([0, 1])
+    ax.set_xlabel("Probability")
+    ax.set_title("Class Probabilities")
+    for bar, val in zip(bars, [human_prob, ai_prob]):
+        ax.text(val + 0.01, bar.get_y() + bar.get_height() / 2,
+                f"{val:.1%}", va="center", fontsize=9)
+    fig.tight_layout()
+    fig.canvas.draw()
+    buf = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    buf = buf.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    plt.close(fig)
+    return buf
