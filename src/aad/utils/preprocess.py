@@ -106,3 +106,20 @@ def compute_waveform_image(waveform: np.ndarray, sr: int) -> np.ndarray:
     buf = buf.reshape(fig.canvas.get_width_height()[::-1] + (3,))
     plt.close(fig)
     return buf
+
+
+def load_and_preprocess(path: str, target_sr: int = 16000) -> "tuple[np.ndarray, torch.Tensor, int]":
+    """
+    Load audio from path, resample if needed, normalize.
+    Returns (raw_waveform_np, tensor_for_model, sr)
+    """
+    import librosa, torch
+    waveform, sr = librosa.load(path, sr=None, mono=True)
+
+    if sr != target_sr:
+        waveform = librosa.resample(waveform, orig_sr=sr, target_sr=target_sr)
+        sr = target_sr
+
+    tensor = torch.tensor(waveform, dtype=torch.float32).unsqueeze(0)
+    tensor = normalize_waveform(tensor)
+    return waveform, tensor, sr
