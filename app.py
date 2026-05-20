@@ -110,3 +110,7 @@ with gr.Blocks(title="AI Voice Detection") as demo:
 
 if __name__ == "__main__":
     demo.launch()
+
+
+# --- waveform plot re-export so import resolves cleanly ---
+from src.aad.utils.preprocess import compute_waveform_image  # noqa: F401
