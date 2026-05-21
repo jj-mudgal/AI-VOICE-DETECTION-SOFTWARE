@@ -142,3 +142,27 @@ Contributions are welcome — see `CONTRIBUTING.md` for full guidelines.
 ## ⏣ License
 
 MIT © 2025 Janmejai Mudgal
+
+---
+
+## ⏣ Model Card
+
+| Field | Detail |
+|---|---|
+| **Model Type** | CNN + Log-Mel Spectrogram |
+| **Training Data** | 2000-sample proof-of-concept dataset |
+| **Languages** | English (primary) |
+| **License** | MIT |
+| **Contact** | [@jj-mudgal](https://github.com/jj-mudgal) |
+
+### Intended Use
+Detecting AI-generated or synthetic speech in audio clips for research, content moderation tooling, and educational purposes.
+
+### Limitations
+- Trained on a 2000-sample dataset — generalisation to diverse TTS engines, languages, and recording conditions is not guaranteed
+- Performance may degrade on heavily compressed audio (e.g. low-bitrate MP3)
+- Not validated on real-time streaming audio
+- Should not be used as the sole basis for any consequential decision
+
+### Out-of-Scope Use
+This model is not intended for surveillance, speaker identification, or any use that violates individual privacy.
