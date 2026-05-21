@@ -126,9 +126,9 @@ GitHub Actions pipeline runs on every push and pull request to `main` / `dev`:
 - [x] CI/CD with GitHub Actions
 - [x] Dockerized deployment
 - [ ] Wav2Vec2 / CLAP embedding fine-tuning
-- [ ] Ensemble: CNN + Whisper + Wav2Vec2 fusion
+- [x] Ensemble: CNN + Whisper + Wav2Vec2 fusion
 - [ ] Dataset expansion (beyond 2000 samples)
-- [ ] Real-time streaming inference
+- [ ] Real-time streaming inference (in progress)
 - [ ] HuggingFace Hub model card + deployment
 
 ---
@@ -166,3 +166,16 @@ Detecting AI-generated or synthetic speech in audio clips for research, content 
 
 ### Out-of-Scope Use
 This model is not intended for surveillance, speaker identification, or any use that violates individual privacy.
+
+---
+
+## ⏣ Changelog
+
+### Week of May 5 2025
+- Fixed broken config, infer, and model_whisper imports
+- Implemented full AudioDataset + training loop with early stopping
+- Rewrote FastAPI server — proper engine init, batch endpoint, CORS hardening
+- Added pytest suite: model, collate, infer, and whisper tests
+- Gradio UI — waveform plot, probability bar, correct label logic
+- Dockerized with multi-stage build and non-root user
+- Pinned all dependency versions for reproducible builds
