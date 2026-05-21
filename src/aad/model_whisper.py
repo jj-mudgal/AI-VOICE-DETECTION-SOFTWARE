@@ -1,3 +1,14 @@
+"""
+model_whisper.py
+----------------
+Alternative backbone using the Whisper encoder for AI voice detection.
+Particularly effective on speech with strong linguistic structure.
+
+Usage:
+    from src.aad.model_whisper import WhisperClassifier
+    model = WhisperClassifier(freeze_encoder=True)
+    logits = model(waveform_tensor)  # (B, 1, T) or (B, T)
+"""
 import torch
 import torch.nn as nn
 from transformers import WhisperModel, WhisperFeatureExtractor
