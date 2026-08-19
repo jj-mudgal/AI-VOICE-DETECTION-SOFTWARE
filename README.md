@@ -1,4 +1,4 @@
-# AI Voice Detection
+# AI Voice Fraud Detection
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-red)
